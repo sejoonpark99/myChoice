@@ -6,4 +6,4 @@ class CollectionConfig(AppConfig):
     name = "collection"
 
     def ready(self):
-        import collection.signals  # This registers the signals
+        import collection.websockets.signals  # This registers the signals
