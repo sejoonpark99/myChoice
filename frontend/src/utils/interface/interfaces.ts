@@ -64,3 +64,8 @@ export interface BulkDeleteResponse {
   deleted: number;
   message?: string;
 }
+
+export interface ValidationErrors {
+  name?: string;
+  group?: string;
+}
