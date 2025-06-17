@@ -52,7 +52,6 @@ class ItemViewSet(viewsets.ModelViewSet):
     def bulk_delete(self, request):
         """
         Bulk delete items by providing a list of IDs
-        Expected payload: {"ids": [1, 2, 3, ...]}
         """
         ids = request.data.get("ids", [])
 
