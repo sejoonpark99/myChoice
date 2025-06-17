@@ -1,0 +1,36 @@
+# Logs
+logs/
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*$py.class
+
+# Django DB
+*.sqlite3
+
+# Virtual environments
+env/
+venv/
+
+# Node (if using JS tooling)
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Editor config
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Env files
+.env
