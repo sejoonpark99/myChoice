@@ -10,6 +10,7 @@ import Alert from '../components/Alert';
 // Utils
 import { logToServer } from '../utils/logger';
 import { Item, ItemsListPageState, BulkDeleteResponse } from '../utils/interface/interfaces';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 // Constants
 const GROUP_OPTIONS = [
@@ -39,6 +40,55 @@ const ItemsListPage: React.FC = () => {
 
   // Configuration
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+  const handleWebSocketMessage = (data) => {
+    switch (data.type) {
+      case 'item_created':
+        setState(prev => ({
+          ...prev,
+          items: [...prev.items, data.item]
+        }));
+        // Optional: Show notification
+        console.log('🆕 Item created:', data.item.name);
+        break;
+
+      case 'item_updated':
+        setState(prev => ({
+          ...prev,
+          items: prev.items.map(item => 
+            item.id === data.item.id ? data.item : item
+          )
+        }));
+        console.log('Item updated:', data.item.name);
+        break;
+
+      case 'item_deleted':
+        setState(prev => ({
+          ...prev,
+          items: prev.items.filter(item => item.id !== data.item_id),
+          selectedItems: prev.selectedItems.filter(id => id !== data.item_id)
+        }));
+        console.log('Item deleted:', data.item_name);
+        break;
+
+      case 'items_bulk_deleted':
+        setState(prev => ({
+          ...prev,
+          items: prev.items.filter(item => !data.item_ids.includes(item.id)),
+          selectedItems: []
+        }));
+        console.log('Bulk deleted:', data.item_ids.length, 'items');
+        break;
+
+      default:
+        console.log('Unknown WebSocket message:', data);
+    }
+  };
+
+  const { isConnected, connectionError } = useWebSocket(
+    'ws://localhost:8000/ws/items/',
+    handleWebSocketMessage
+  );
 
   // Effects
   useEffect(() => {
@@ -302,9 +352,12 @@ const ItemsListPage: React.FC = () => {
         <h1 className="page-heading text-3xl font-bold text-gray-900">
           Items
         </h1>
-        <p className="nav-heading text-gray-600 mt-1">
-          Manage your collection of items
-        </p>
+        <div className="flex items-center space-x-2">
+          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+          <span className="text-sm text-gray-600">
+            {isConnected ? 'Live' : 'Offline'}
+          </span>
+        </div>
       </header>
       
       <div className="flex items-center space-x-3">
