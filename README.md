@@ -30,7 +30,7 @@ A modern full-stack application for managing collections with real-time updates,
 ### 1. Clone and Navigate to Backend
 
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/sejoonpark99/myChoice.git)
 cd myChoice/backend
 ```
 
