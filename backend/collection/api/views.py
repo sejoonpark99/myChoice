@@ -5,11 +5,57 @@ from rest_framework.response import Response
 from rest_framework import status
 from ..models import Item
 from .serializers import ItemSerializer
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample
+from drf_spectacular.openapi import OpenApiParameter, OpenApiTypes
 
 # Logger for collection operations
 logger = logging.getLogger(__name__)
 
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="List all items",
+        description="Retrieve a list of all items in the collection",
+        responses={200: ItemSerializer(many=True)},
+        examples=[
+            OpenApiExample(
+                "Success Response",
+                value=[
+                    {
+                        "id": 1,
+                        "name": "Sample Item",
+                        "group": "Primary",
+                        "created_at": "2025-06-17T10:00:00Z",
+                        "updated_at": "2025-06-17T10:00:00Z",
+                    }
+                ],
+            )
+        ],
+    ),
+    create=extend_schema(
+        summary="Create a new item",
+        description="Create a new item in the collection",
+        examples=[
+            OpenApiExample(
+                "Request Example", value={"name": "New Item", "group": "Primary"}
+            )
+        ],
+    ),
+    retrieve=extend_schema(
+        summary="Get item details",
+        description="Retrieve details of a specific item by ID",
+    ),
+    update=extend_schema(
+        summary="Update an item", description="Update all fields of an existing item"
+    ),
+    partial_update=extend_schema(
+        summary="Partially update an item",
+        description="Update specific fields of an existing item",
+    ),
+    destroy=extend_schema(
+        summary="Delete an item", description="Delete an item from the collection"
+    ),
+)
 class ItemViewSet(viewsets.ModelViewSet):
     """
     Provides: list, retrieve, create, partial_update, update, destroy
@@ -48,6 +94,35 @@ class ItemViewSet(viewsets.ModelViewSet):
         instance.delete()
         logger.warning(f"Deleted item {item_id}")
 
+    @extend_schema(
+        summary="Bulk delete items",
+        description="Delete multiple items at once by providing a list of IDs",
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "ids": {
+                        "type": "array",
+                        "items": {"type": "integer"},
+                        "description": "List of item IDs to delete",
+                    }
+                },
+                "required": ["ids"],
+            }
+        },
+        examples=[OpenApiExample("Bulk Delete Request", value={"ids": [1, 2, 3]})],
+        responses={
+            200: {
+                "description": "Items deleted successfully",
+                "examples": {
+                    "application/json": {
+                        "deleted": 3,
+                        "message": "Successfully deleted 3 items",
+                    }
+                },
+            }
+        },
+    )
     @action(detail=False, methods=["delete"])
     def bulk_delete(self, request):
         """
