@@ -51,7 +51,7 @@ source env/bin/activate
 
 ```bash
 # Install Python packages
-pip install django djangorestframework channels drf-spectacular
+pip install django djangorestframework channels drf-spectacular django-cors-headers
 
 # Verify installation
 pip list | grep -E "(django|channels|spectacular)"
