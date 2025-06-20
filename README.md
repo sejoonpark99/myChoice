@@ -198,7 +198,7 @@ npm run dev
 cd backend
 python -m venv env
 env\Scripts\activate  # Windows
-pip install django djangorestframework channels drf-spectacular daphne
+pip install django djangorestframework channels drf-spectacular daphne django-cors-headers
 python manage.py migrate
 python -m daphne -p 8000 core.asgi:application
 
